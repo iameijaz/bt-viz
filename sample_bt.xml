@@ -1,0 +1,29 @@
+<root BTCPP_format="4">
+  <BehaviorTree ID="DeliveryMission">
+    <Sequence>
+      <CheckBattery/>
+      <Fallback>
+        <HasMission/>
+        <GetMission/>
+      </Fallback>
+      <SubTree ID="DeliverySubtree"/>
+      <Parallel>
+        <MonitorAltitude/>
+        <NavigateToDropoff/>
+      </Parallel>
+      <Inverter>
+        <IsObstacleDetected/>
+      </Inverter>
+      <DeliverPackage/>
+      <ReturnHome/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="DeliverySubtree">
+    <Sequence>
+      <TakeOff/>
+      <NavigateToPickup/>
+      <PickPackage/>
+    </Sequence>
+  </BehaviorTree>
+</root>
