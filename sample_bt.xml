@@ -1,29 +1,81 @@
-<root BTCPP_format="4">
-  <BehaviorTree ID="DeliveryMission">
-    <Sequence>
-      <CheckBattery/>
-      <Fallback>
-        <HasMission/>
-        <GetMission/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MARK I BOOT SEQUENCE — Behavior Tree Demo
+  Iron Man's suit startup logic.
+  A clean example of Sequence, Fallback, Parallel, Condition, and Action nodes.
+-->
+<root BTCPP_format="4" main_tree_to_execute="IronManBoot">
+ 
+  <BehaviorTree ID="IronManBoot">
+ 
+    <!--
+      Root Sequence: every step must succeed in order.
+      One failure aborts the mission. JARVIS does not cut corners.
+    -->
+    <Sequence name="SuitBootSequence">
+ 
+      <!-- Step 1: Safety checks before anything powers on -->
+      <Sequence name="PreflightChecks">
+        <IsArcReactorOnline/>
+        <IsPilotBiometricsNominal/>
+        <IsHullIntegrityOK/>
+      </Sequence>
+ 
+      <!-- Step 2: Try the primary power path; fall back to backup -->
+      <Fallback name="PowerInitialisation">
+        <Sequence name="PrimaryPower">
+          <LoadPrimaryPowerCore/>
+          <CalibrateRepulsors/>
+        </Sequence>
+        <Sequence name="BackupPower">
+          <SayLine line="Primary core offline. Switching to backup."/>
+          <LoadBackupPowerCore/>
+          <CalibrateRepulsors/>
+        </Sequence>
       </Fallback>
-      <SubTree ID="DeliverySubtree"/>
-      <Parallel>
-        <MonitorAltitude/>
-        <NavigateToDropoff/>
+ 
+      <!-- Step 3: Boot systems in parallel — faster startup -->
+      <Parallel name="SystemsOnline">
+        <Sequence name="CommsAndHUD">
+          <InitialiseHUD/>
+          <EstablishSatelliteUplink/>
+        </Sequence>
+        <Sequence name="Propulsion">
+          <RunThrusterDiagnostic/>
+          <PrimeThrusterSequence/>
+        </Sequence>
+        <Sequence name="Weapons">
+          <LoadMissileInventory/>
+          <SafetyOn/>
+        </Sequence>
       </Parallel>
-      <Inverter>
-        <IsObstacleDetected/>
-      </Inverter>
-      <DeliverPackage/>
-      <ReturnHome/>
+ 
+      <!-- Step 4: JARVIS comes online and confirms readiness -->
+      <SayLine line="All systems nominal. Nice to see you, Mr. Stark."/>
+      <SetMissionStatus status="ready_for_deployment"/>
+ 
     </Sequence>
+ 
   </BehaviorTree>
-
-  <BehaviorTree ID="DeliverySubtree">
-    <Sequence>
-      <TakeOff/>
-      <NavigateToPickup/>
-      <PickPackage/>
-    </Sequence>
-  </BehaviorTree>
+ 
+  <TreeNodesModel>
+    <!-- Conditions: check state, return true/false instantly -->
+    <Condition ID="IsArcReactorOnline"/>
+    <Condition ID="IsPilotBiometricsNominal"/>
+    <Condition ID="IsHullIntegrityOK"/>
+ 
+    <!-- Actions: do something, may take time -->
+    <Action ID="LoadPrimaryPowerCore"/>
+    <Action ID="LoadBackupPowerCore"/>
+    <Action ID="CalibrateRepulsors"/>
+    <Action ID="InitialiseHUD"/>
+    <Action ID="EstablishSatelliteUplink"/>
+    <Action ID="RunThrusterDiagnostic"/>
+    <Action ID="PrimeThrusterSequence"/>
+    <Action ID="LoadMissileInventory"/>
+    <Action ID="SafetyOn"/>
+    <Action ID="SetMissionStatus"><input_port name="status"/></Action>
+    <Action ID="SayLine"><input_port name="line"/></Action>
+  </TreeNodesModel>
+ 
 </root>

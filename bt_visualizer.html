@@ -89,6 +89,8 @@ button.active{background:#1e3a5f;border-color:var(--seq-b);color:#93c5fd}
   <button id="btn-expand">Expand all</button>
   <button id="btn-collapse">Collapse all</button>
   <div class="sep"></div>
+  <button id="btn-dir" title="Toggle layout direction">↕ Vertical</button>
+  <div class="sep"></div>
   <input type="text" id="search-input" placeholder="Search nodes...">
   <div class="sep"></div>
   <div class="legend">
@@ -227,17 +229,37 @@ function mkNode(el,depth=0){
 
 function flat(n,arr=[]){arr.push(n);if(!collapsed.has(n.id))for(const c of n.children)flat(c,arr);return arr;}
 
-function subW(n){
-  if(collapsed.has(n.id)||!n.children.length)return n.w;
-  return Math.max(n.w,n.children.map(subW).reduce((a,b)=>a+b+HG,-HG));
+let horiz=false;
+
+// cross-axis span: width in vertical mode, height in horizontal mode
+function span(n){
+  if(horiz){
+    if(collapsed.has(n.id)||!n.children.length)return n.h;
+    return Math.max(n.h,n.children.map(span).reduce((a,b)=>a+b+HG,-HG));
+  }else{
+    if(collapsed.has(n.id)||!n.children.length)return n.w;
+    return Math.max(n.w,n.children.map(span).reduce((a,b)=>a+b+HG,-HG));
+  }
 }
 function layout(n,x,y){
   n.x=x;n.y=y;
   if(collapsed.has(n.id)||!n.children.length)return;
-  const cy=y+n.h+VG,ws=n.children.map(subW);
-  const tot=ws.reduce((a,b)=>a+b+HG,-HG);
-  let cx=x+n.w/2-tot/2;
-  for(let i=0;i<n.children.length;i++){layout(n.children[i],cx+ws[i]/2-n.children[i].w/2,cy);cx+=ws[i]+HG;}
+  if(horiz){
+    // children placed to the right; siblings stacked vertically
+    const cx=x+n.w+VG;
+    const spans=n.children.map(span);
+    const tot=spans.reduce((a,b)=>a+b+HG,-HG);
+    let cy=y+n.h/2-tot/2;
+    for(let i=0;i<n.children.length;i++){
+      layout(n.children[i],cx,cy+spans[i]/2-n.children[i].h/2);
+      cy+=spans[i]+HG;
+    }
+  }else{
+    const cy=y+n.h+VG,ws=n.children.map(span);
+    const tot=ws.reduce((a,b)=>a+b+HG,-HG);
+    let cx=x+n.w/2-tot/2;
+    for(let i=0;i<n.children.length;i++){layout(n.children[i],cx+ws[i]/2-n.children[i].w/2,cy);cx+=ws[i]+HG;}
+  }
 }
 function mkEdges(n,arr=[]){if(!collapsed.has(n.id))for(const c of n.children){arr.push({f:n,t:c});mkEdges(c,arr);}return arr;}
 
@@ -295,13 +317,29 @@ function render(){
 
   ctx.lineWidth=1.5*lw;
   for(const e of edges){
-    const fx=e.f.x+e.f.w/2,fy=e.f.y+e.f.h,tx=e.t.x+e.t.w/2,ty=e.t.y,my=(fy+ty)/2;
+    let fx,fy,tx,ty,c1x,c1y,c2x,c2y;
+    if(horiz){
+      // parent right-edge center → child left-edge center
+      fx=e.f.x+e.f.w; fy=e.f.y+e.f.h/2;
+      tx=e.t.x;        ty=e.t.y+e.t.h/2;
+      const mx=(fx+tx)/2;
+      c1x=mx; c1y=fy; c2x=mx; c2y=ty;
+    }else{
+      fx=e.f.x+e.f.w/2; fy=e.f.y+e.f.h;
+      tx=e.t.x+e.t.w/2; ty=e.t.y;
+      const my=(fy+ty)/2;
+      c1x=fx; c1y=my; c2x=tx; c2y=my;
+    }
     const hl=searchTerm&&(e.f.name.toLowerCase().includes(searchTerm)||e.t.name.toLowerCase().includes(searchTerm));
     ctx.strokeStyle=hl?'#3b82f650':'#252b3a';
-    ctx.beginPath();ctx.moveTo(fx,fy);ctx.bezierCurveTo(fx,my,tx,my,tx,ty);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(fx,fy);ctx.bezierCurveTo(c1x,c1y,c2x,c2y,tx,ty);ctx.stroke();
+    // arrowhead pointing in flow direction
     const ah=5*lw;
     ctx.fillStyle=hl?'#3b82f650':'#252b3a';
-    ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx-ah/2,ty-ah);ctx.lineTo(tx+ah/2,ty-ah);ctx.closePath();ctx.fill();
+    ctx.beginPath();
+    if(horiz){ctx.moveTo(tx,ty);ctx.lineTo(tx-ah,ty-ah/2);ctx.lineTo(tx-ah,ty+ah/2);}
+    else{ctx.moveTo(tx,ty);ctx.lineTo(tx-ah/2,ty-ah);ctx.lineTo(tx+ah/2,ty-ah);}
+    ctx.closePath();ctx.fill();
   }
 
   for(const n of nodes){
@@ -339,18 +377,31 @@ function render(){
     }
 
     if(n.children.length){
-      const cx2=n.x+n.w-8*lw,cy2=n.y+n.h/2,sz=3.5*lw;
+      // chevron points down (vertical) or right (horizontal), flips when collapsed
+      const cx2=horiz?n.x+n.w/2:n.x+n.w-8*lw;
+      const cy2=horiz?n.y+n.h-8*lw:n.y+n.h/2;
+      const sz=3.5*lw;
       ctx.fillStyle=c.bo+'88';ctx.beginPath();
-      if(isCol){ctx.moveTo(cx2-sz,cy2-sz);ctx.lineTo(cx2+sz,cy2);ctx.lineTo(cx2-sz,cy2+sz);}
-      else{ctx.moveTo(cx2-sz,cy2-sz*.5);ctx.lineTo(cx2+sz,cy2-sz*.5);ctx.lineTo(cx2,cy2+sz*.5);}
+      if(horiz){
+        // chevron: collapsed=right-pointing, expanded=down-pointing
+        if(isCol){ctx.moveTo(cx2-sz*.5,cy2-sz);ctx.lineTo(cx2+sz*.5,cy2);ctx.lineTo(cx2-sz*.5,cy2+sz);}
+        else{ctx.moveTo(cx2-sz,cy2-sz*.5);ctx.lineTo(cx2,cy2+sz*.5);ctx.lineTo(cx2+sz,cy2-sz*.5);}
+      }else{
+        if(isCol){ctx.moveTo(cx2-sz,cy2-sz);ctx.lineTo(cx2+sz,cy2);ctx.lineTo(cx2-sz,cy2+sz);}
+        else{ctx.moveTo(cx2-sz,cy2-sz*.5);ctx.lineTo(cx2+sz,cy2-sz*.5);ctx.lineTo(cx2,cy2+sz*.5);}
+      }
       ctx.closePath();ctx.fill();
     }
 
     if(isCol){
-      const cnt=countDesc(n),bw=22*lw,bh=12*lw,bx=n.x+n.w/2-bw/2,by=n.y+n.h+3*lw;
+      const cnt=countDesc(n);
+      const bw=22*lw,bh=12*lw;
+      // badge sits below node (vertical) or right of node (horizontal)
+      const bx=horiz?n.x+n.w+3*lw:n.x+n.w/2-bw/2;
+      const by=horiz?n.y+n.h/2-bh/2:n.y+n.h+3*lw;
       rr(ctx,bx,by,bw,bh,3*lw);ctx.fillStyle=c.bo+'22';ctx.fill();
       ctx.font=`${9*lw}px -apple-system,sans-serif`;ctx.fillStyle=c.bo;
-      ctx.fillText(cnt,n.x+n.w/2,by+bh/2);
+      ctx.fillText(cnt,bx+bw/2,by+bh/2);
     }
   }
   ctx.restore();
@@ -365,9 +416,17 @@ function updateMM(){
   const z=Math.min((mw-6)/(x1-x0),(mh-6)/(y1-y0));
   const ox=(mw-(x1-x0)*z)/2,oy=(mh-(y1-y0)*z)/2;
   for(const e of edges){
-    const fx=(e.f.x+e.f.w/2-x0)*z+ox,fy=(e.f.y+e.f.h-y0)*z+oy;
-    const tx=(e.t.x+e.t.w/2-x0)*z+ox,ty=(e.t.y-y0)*z+oy,my=(fy+ty)/2;
-    mmCtx.beginPath();mmCtx.moveTo(fx,fy);mmCtx.bezierCurveTo(fx,my,tx,my,tx,ty);
+    let fx,fy,tx,ty,c1x,c1y,c2x,c2y;
+    if(horiz){
+      fx=(e.f.x+e.f.w-x0)*z+ox; fy=(e.f.y+e.f.h/2-y0)*z+oy;
+      tx=(e.t.x-x0)*z+ox;        ty=(e.t.y+e.t.h/2-y0)*z+oy;
+      const mx=(fx+tx)/2; c1x=mx;c1y=fy;c2x=mx;c2y=ty;
+    }else{
+      fx=(e.f.x+e.f.w/2-x0)*z+ox; fy=(e.f.y+e.f.h-y0)*z+oy;
+      tx=(e.t.x+e.t.w/2-x0)*z+ox; ty=(e.t.y-y0)*z+oy;
+      const my=(fy+ty)/2; c1x=fx;c1y=my;c2x=tx;c2y=my;
+    }
+    mmCtx.beginPath();mmCtx.moveTo(fx,fy);mmCtx.bezierCurveTo(c1x,c1y,c2x,c2y,tx,ty);
     mmCtx.strokeStyle='#252b3a';mmCtx.lineWidth=0.5;mmCtx.stroke();
   }
   for(const n of nodes){
@@ -438,6 +497,13 @@ document.getElementById('btn-zin').onclick=()=>setZoom(cam.zoom*1.25);
 document.getElementById('btn-zout').onclick=()=>setZoom(cam.zoom/1.25);
 document.getElementById('btn-expand').onclick=()=>{collapsed.clear();rebuild();};
 document.getElementById('btn-collapse').onclick=()=>{for(const n of nodes)if(n.children.length)collapsed.add(n.id);rebuild();};
+
+document.getElementById('btn-dir').onclick=function(){
+  horiz=!horiz;
+  this.textContent=horiz?'↔ Horizontal':'↕ Vertical';
+  rebuild();
+  fitView();render();updateMM();
+};
 document.getElementById('tree-select').addEventListener('change',e=>{collapsed.clear();loadTree(e.target.value);});
 
 document.getElementById('btn-editor').onclick=function(){
@@ -571,93 +637,60 @@ window.addEventListener('resize',resizeAll);
 resizeAll();
 
 const DEMO=`<?xml version="1.0" encoding="UTF-8"?>
-<root BTCPP_format="4" main_tree_to_execute="PatrolMission">
-
-  <BehaviorTree ID="PatrolMission">
-    <ReactiveFallback name="MissionRoot">
-
-      <Sequence name="EmergencyDock">
-        <IsBatteryCritical/>
-        <ReportStatusToServer status="Emergency: Battery Critical"/>
-        <NavigateToDock/>
-        <WaitUntilCharged/>
-      </Sequence>
-
-      <Sequence name="InvestigateAnomaly">
-        <IsAnomalyDetected/>
-        <ReportStatusToServer status="Anomaly Detected"/>
-        <SavePatrolCheckpoint/>
-        <NavigateToAnomalyLocation/>
-        <InspectAnomaly/>
-        <LogAnomalyEvent/>
-        <ReportAnomalyToServer/>
-        <RestorePatrolCheckpoint/>
-      </Sequence>
-
-      <Sequence name="PatrolOperations">
-        <WaitForPatrolSchedule/>
-        <GetPatrolWaypoints/>
-        <ReportStatusToServer status="Patrol Started"/>
-        <Parallel name="PatrolWithTelemetry">
-          <RepeatUntilMissionEnd name="PatrolLoop">
-            <Sequence name="WaypointCycle">
-              <GetNextWaypoint/>
-              <Fallback name="BatteryOrContinue">
-                <Sequence name="LowBatteryDock">
-                  <IsBatteryLow/>
-                  <SavePatrolCheckpoint/>
-                  <NavigateToDock/>
-                  <WaitUntilCharged/>
-                  <RestorePatrolCheckpoint/>
-                </Sequence>
-                <Sequence name="NavigateAndScan">
-                  <NavigateToWaypoint/>
-                  <ScanAreaAtWaypoint/>
-                  <ReportStatusToServer status="Waypoint Complete"/>
-                </Sequence>
-              </Fallback>
-            </Sequence>
-          </RepeatUntilMissionEnd>
-          <RepeatUntilFailure name="ContinuousTelemetry">
-            <Sequence name="TelemetryUpdate">
-              <UpdateLocationFromIMUAndGPS/>
-              <UpdateBatteryLevel/>
-              <ReportTelemetryToServer/>
-            </Sequence>
-          </RepeatUntilFailure>
-        </Parallel>
-        <ReportStatusToServer status="Patrol Complete"/>
-      </Sequence>
-
-    </ReactiveFallback>
+<!--
+  THE DOOR EXAMPLE — classic "Hello World" of Behavior Trees
+  A robot needs to walk through a door. The door might be open,
+  locked, or completely stuck. Three strategies, tried in order.
+ 
+  KEY CONCEPTS:
+    Sequence  = do ALL children left-to-right; stop on first FAILURE
+    Selector  = try children left-to-right; stop on first SUCCESS
+    Action    = a leaf node that does real work
+-->
+<root BTCPP_format="4" main_tree_to_execute="GoThroughDoor">
+ 
+  <BehaviorTree ID="GoThroughDoor">
+ 
+    <Sequence name="GoThroughDoor">
+ 
+      <WalkToDoor/>
+ 
+      <!--
+        The door might need different handling.
+        Selector tries each option until one succeeds.
+      -->
+      <Selector name="OpenDoor">
+ 
+        <!-- Option A: just open it (works if unlocked) -->
+        <OpenDoor/>
+ 
+        <!-- Option B: locked — unlock first, then open -->
+        <Sequence name="UnlockThenOpen">
+          <UnlockDoor/>
+          <OpenDoor/>
+        </Sequence>
+ 
+        <!-- Option C: nothing works — smash it -->
+        <SmashDoor/>
+ 
+      </Selector>
+ 
+      <WalkThroughDoor/>
+      <CloseDoor/>
+ 
+    </Sequence>
+ 
   </BehaviorTree>
-
+ 
   <TreeNodesModel>
-    <Condition ID="IsBatteryCritical"/>
-    <Condition ID="IsBatteryLow"/>
-    <Condition ID="IsAnomalyDetected"/>
-    <Condition ID="WaitForPatrolSchedule"/>
-    <Action ID="NavigateToWaypoint"/>
-    <Action ID="NavigateToDock"/>
-    <Action ID="NavigateToAnomalyLocation"/>
-    <Action ID="GetNextWaypoint"/>
-    <Action ID="GetPatrolWaypoints"/>
-    <Action ID="SavePatrolCheckpoint"/>
-    <Action ID="RestorePatrolCheckpoint"/>
-    <Action ID="ScanAreaAtWaypoint"/>
-    <Action ID="InspectAnomaly"/>
-    <Action ID="LogAnomalyEvent"/>
-    <Action ID="WaitUntilCharged"/>
-    <Action ID="ReportStatusToServer"><input_port name="status"/></Action>
-    <Action ID="ReportAnomalyToServer"/>
-    <Action ID="ReportTelemetryToServer"/>
-    <Action ID="UpdateLocationFromIMUAndGPS"/>
-    <Action ID="UpdateBatteryLevel"/>
-    <Decorator ID="RepeatUntilMissionEnd"/>
-    <Decorator ID="RepeatUntilFailure"/>
-    <Control ID="Parallel"/>
+    <Action ID="WalkToDoor"/>
+    <Action ID="OpenDoor"/>
+    <Action ID="UnlockDoor"/>
+    <Action ID="SmashDoor"/>
+    <Action ID="WalkThroughDoor"/>
+    <Action ID="CloseDoor"/>
   </TreeNodesModel>
-
+ 
 </root>`;
 
 editorEl.value=DEMO;
