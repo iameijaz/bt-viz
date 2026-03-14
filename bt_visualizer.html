@@ -8,57 +8,66 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0f1117;--surface:#181c27;--border:#2a2f3f;--text:#e2e6f0;--muted:#6b7280;
-  --seq:#1e3a5f;--seq-b:#3b82f6;--seq-t:#93c5fd;
-  --fall:#3b2a1a;--fall-b:#f59e0b;--fall-t:#fcd34d;
-  --rfall:#2d1f3a;--rfall-b:#a855f7;--rfall-t:#d8b4fe;
-  --par:#1a2e1a;--par-b:#22c55e;--par-t:#86efac;
-  --cond:#1f2937;--cond-b:#06b6d4;--cond-t:#67e8f9;
-  --act:#1f2937;--act-b:#e2e8f0;--act-t:#f8fafc;
-  --dec:#2a1f1f;--dec-b:#ef4444;--dec-t:#fca5a5;
-  --sel:#0ea5e9;
-  font-size:14px
+  --seq-b:#3b82f6;--fall-b:#f59e0b;--rfall-b:#a855f7;--par-b:#22c55e;
+  --cond-b:#06b6d4;--act-b:#94a3b8;--dec-b:#ef4444;
 }
-body{background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column}
+body{background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;font-size:14px}
 
-#toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
-#toolbar h1{font-size:13px;font-weight:600;color:var(--text);margin-right:4px;white-space:nowrap}
-.sep{width:1px;height:20px;background:var(--border);margin:0 2px}
-button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .15s}
+#toolbar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;min-height:40px}
+#toolbar h1{font-size:13px;font-weight:600;margin-right:2px;white-space:nowrap}
+.sep{width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0}
+button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 9px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .15s}
 button:hover{background:var(--border);color:var(--text)}
-button.active{background:#1e3a5f;border-color:var(--seq-b);color:var(--seq-t)}
-#zoom-val{font-size:12px;color:var(--muted);min-width:36px;text-align:center}
-#file-label{background:transparent;border:1px solid var(--seq-b);color:var(--seq-t);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap}
+button.active{background:#1e3a5f;border-color:var(--seq-b);color:#93c5fd}
+#zoom-val{font-size:12px;color:var(--muted);min-width:34px;text-align:center}
+#file-label{border:1px solid var(--seq-b);color:#93c5fd;padding:3px 9px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;background:transparent}
 #file-label:hover{background:#1e3a5f}
 #file-input{display:none}
-#tree-select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-size:12px}
-#search{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:6px;font-size:12px;width:140px}
-#search::placeholder{color:var(--muted)}
-.legend{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
-.leg-dot{width:8px;height:8px;border-radius:2px}
+#tree-select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:3px 6px;border-radius:6px;font-size:12px}
+#search-input{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:3px 8px;border-radius:6px;font-size:12px;width:120px}
+#search-input::placeholder{color:var(--muted)}
+.legend{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--muted)}
+.leg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+#err-msg{font-size:11px;color:#fca5a5;background:#2a1515;border:1px solid #ef444440;border-radius:4px;padding:2px 8px;display:none;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-#canvas-wrap{flex:1;overflow:hidden;position:relative}
-#canvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:grab}
-#canvas.grabbing{cursor:grabbing}
+#main{flex:1;display:flex;overflow:hidden;min-height:0}
+
+#editor-pane{width:380px;min-width:180px;display:flex;flex-direction:column;border-right:1px solid var(--border);flex-shrink:0;position:relative;transition:width .1s}
+#editor-pane.hidden{width:0!important;min-width:0;overflow:hidden;border:none}
+#editor-header{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:6px}
+#editor-header-label{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+#editor-btns{display:flex;gap:5px;flex-shrink:0}
+#editor-body{flex:1;display:flex;overflow:hidden;position:relative;min-height:0}
+#line-nums{width:38px;flex-shrink:0;background:#12151e;border-right:1px solid var(--border);padding:8px 0;font:12px/1.6 'Fira Code','Cascadia Code','Consolas',monospace;color:#3d4460;text-align:right;padding-right:6px;overflow:hidden;user-select:none;white-space:pre}
+#xml-editor{flex:1;background:#12151e;color:#c9d1d9;border:none;outline:none;resize:none;font:12px/1.6 'Fira Code','Cascadia Code','Consolas',monospace;padding:8px 10px;tab-size:2;caret-color:#60a5fa;overflow:auto;white-space:pre;word-wrap:normal}
+#xml-editor::selection{background:#1d3557}
+#xml-editor::-webkit-scrollbar{width:5px;height:5px}
+#xml-editor::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+#resizer{width:4px;background:transparent;cursor:col-resize;flex-shrink:0;z-index:10;transition:background .15s}
+#resizer:hover,#resizer.active{background:var(--seq-b)}
+
+#canvas-wrap{flex:1;overflow:hidden;position:relative;min-width:0}
+#canvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:grab;display:block}
 #canvas.panning{cursor:grabbing}
-svg#tree-svg{position:absolute;top:0;left:0;pointer-events:none}
 
-#minimap{position:absolute;bottom:12px;right:12px;width:160px;height:100px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+#minimap{position:absolute;bottom:12px;right:12px;width:150px;height:90px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;opacity:.85}
 #minimap canvas{width:100%;height:100%}
 
-#tooltip{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .15s;max-width:240px;z-index:100}
-#tooltip .tt-title{font-weight:600;font-size:13px;margin-bottom:4px}
-#tooltip .tt-type{color:var(--muted);font-size:11px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
-#tooltip .tt-port{display:flex;gap:6px;margin-top:3px;font-size:11px;color:var(--muted)}
-#tooltip .tt-port span{color:var(--text)}
+#tooltip{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .1s;max-width:230px;z-index:100;line-height:1.5}
+.tt-title{font-weight:600;font-size:13px;margin-bottom:2px}
+.tt-kind{color:var(--muted);font-size:11px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.tt-row{display:flex;gap:6px;font-size:11px;margin-top:2px}
+.tt-row .k{color:var(--muted)}.tt-row .v{color:var(--text)}
 
-#drop-zone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;pointer-events:none;opacity:1;transition:opacity .3s}
-#drop-zone.hidden{opacity:0}
-#drop-zone .dz-icon{width:48px;height:48px;border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center}
-#drop-zone p{color:var(--muted);font-size:13px;text-align:center;line-height:1.6}
-#drop-zone strong{color:var(--seq-t)}
+#drop-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none;transition:opacity .3s}
+#drop-hint.hidden{opacity:0}
+#drop-hint p{color:var(--muted);font-size:13px;text-align:center;line-height:1.7}
+#drop-hint strong{color:#93c5fd}
+#drop-hint .dz{width:44px;height:44px;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center}
 
-#status{position:absolute;bottom:12px;left:12px;font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 8px}
+#statusbar{position:absolute;bottom:12px;left:12px;font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
 </style>
 </head>
 <body>
@@ -66,695 +75,525 @@ svg#tree-svg{position:absolute;top:0;left:0;pointer-events:none}
 <div id="toolbar">
   <h1>BT Visualizer</h1>
   <div class="sep"></div>
-  <label id="file-label" for="file-input">Open XML</label>
+  <button id="btn-editor" class="active">Editor</button>
+  <label id="file-label" for="file-input">Open file</label>
   <input type="file" id="file-input" accept=".xml">
   <div class="sep"></div>
   <select id="tree-select" style="display:none"></select>
   <div class="sep"></div>
   <button id="btn-fit">Fit</button>
-  <button id="btn-zoom-in">+</button>
+  <button id="btn-zin">+</button>
   <span id="zoom-val">100%</span>
-  <button id="btn-zoom-out">-</button>
+  <button id="btn-zout">−</button>
   <div class="sep"></div>
   <button id="btn-expand">Expand all</button>
   <button id="btn-collapse">Collapse all</button>
   <div class="sep"></div>
-  <input type="text" id="search" placeholder="Search nodes...">
+  <input type="text" id="search-input" placeholder="Search nodes...">
   <div class="sep"></div>
   <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:#3b82f6"></div>Sequence</div>
-    <div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Fallback</div>
-    <div class="leg"><div class="leg-dot" style="background:#a855f7"></div>ReactiveFallback</div>
-    <div class="leg"><div class="leg-dot" style="background:#22c55e"></div>Parallel</div>
-    <div class="leg"><div class="leg-dot" style="background:#06b6d4"></div>Condition</div>
-    <div class="leg"><div class="leg-dot" style="background:#e2e8f0"></div>Action</div>
-    <div class="leg"><div class="leg-dot" style="background:#ef4444"></div>Decorator</div>
+    <div class="leg"><div class="leg-dot" style="background:#3b82f6"></div>Seq</div>
+    <div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Fall</div>
+    <div class="leg"><div class="leg-dot" style="background:#a855f7"></div>RFall</div>
+    <div class="leg"><div class="leg-dot" style="background:#22c55e"></div>Par</div>
+    <div class="leg"><div class="leg-dot" style="background:#06b6d4"></div>Cond</div>
+    <div class="leg"><div class="leg-dot" style="background:#94a3b8"></div>Action</div>
+    <div class="leg"><div class="leg-dot" style="background:#ef4444"></div>Dec</div>
   </div>
+  <span id="err-msg"></span>
 </div>
 
-<div id="canvas-wrap">
-  <canvas id="canvas"></canvas>
-  <div id="drop-zone">
-    <div class="dz-icon">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6b7280" stroke-width="1.5">
-        <path d="M10 3v10M6 9l4-4 4 4M3 14v1a2 2 0 002 2h10a2 2 0 002-2v-1"/>
-      </svg>
+<div id="main">
+
+  <div id="editor-pane">
+    <div id="editor-header">
+      <span id="editor-header-label">XML editor</span>
+      <div id="editor-btns">
+        <button id="btn-format" title="Format XML (Ctrl+Shift+F)">Format</button>
+        <button id="btn-copy">Copy</button>
+        <button id="btn-clear">Clear</button>
+      </div>
     </div>
-    <p>Drop a <strong>BT XML file</strong> here<br>or use <strong>Open XML</strong> above</p>
-    <p style="font-size:11px;margin-top:-8px">Supports BehaviorTree.CPP format 4</p>
+    <div id="editor-body">
+      <div id="line-nums"></div>
+      <textarea id="xml-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Paste BT XML here — tree updates as you type..."></textarea>
+    </div>
   </div>
-  <div id="minimap"><canvas id="mm-canvas"></canvas></div>
-  <div id="tooltip">
-    <div class="tt-title" id="tt-title"></div>
-    <div class="tt-type" id="tt-type"></div>
-    <div id="tt-ports"></div>
+
+  <div id="resizer"></div>
+
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div id="drop-hint">
+      <div class="dz">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#6b7280" stroke-width="1.5">
+          <path d="M10 3v10M6 9l4-4 4 4M3 14v1a2 2 0 002 2h10a2 2 0 002-2v-1"/>
+        </svg>
+      </div>
+      <p>Paste XML in the editor pane<br>or <strong>drop a .xml file</strong> here</p>
+      <p style="font-size:11px;color:#374151">BehaviorTree.CPP format 4</p>
+    </div>
+    <div id="minimap"><canvas id="mm-canvas"></canvas></div>
+    <div id="tooltip">
+      <div class="tt-title" id="tt-title"></div>
+      <div class="tt-kind"  id="tt-kind"></div>
+      <div id="tt-ports"></div>
+    </div>
+    <div id="statusbar">Paste XML or open a file to begin</div>
   </div>
-  <div id="status" id="status-bar">No file loaded</div>
+
 </div>
 
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const mmCanvas = document.getElementById('mm-canvas');
-const mmCtx = mmCanvas.getContext('2d');
-const tooltip = document.getElementById('tooltip');
-const dropZone = document.getElementById('drop-zone');
-const statusEl = document.getElementById('status');
+const canvas   = document.getElementById('canvas');
+const ctx      = canvas.getContext('2d');
+const mmCv     = document.getElementById('mm-canvas');
+const mmCtx    = mmCv.getContext('2d');
+const editorEl = document.getElementById('xml-editor');
+const lineNums = document.getElementById('line-nums');
+const tooltip  = document.getElementById('tooltip');
+const dropHint = document.getElementById('drop-hint');
+const statusEl = document.getElementById('statusbar');
+const errMsg   = document.getElementById('err-msg');
 
-let W = 0, H = 0;
-let cam = {x: 0, y: 0, zoom: 1};
-let nodes = [];
-let edges = [];
-let parsedTrees = {};
-let activeTree = null;
-let nodeModel = {};
-let hoveredNode = null;
-let selectedNode = null;
-let dragging = null;
-let dragOffset = {x:0, y:0};
-let panning = false;
-let panStart = {x:0, y:0};
-let camStart = {x:0, y:0};
-let searchTerm = '';
-let collapsedNodes = new Set();
+let W=0,H=0;
+let cam={x:0,y:0,zoom:1};
+let nodes=[],edges=[];
+let parsedTrees={},nodeModel={};
+let hoveredNode=null,selectedNode=null;
+let dragging=null,dragOff={x:0,y:0};
+let panning=false,panSt={x:0,y:0},camSt={x:0,y:0};
+let searchTerm='';
+let collapsed=new Set();
+let parseTimer=null;
 
-const NODE_W = 148;
-const NODE_H = 44;
-const V_GAP = 28;
-const H_GAP = 14;
+const NW=148,NH=44,VG=30,HG=12;
 
-const COLORS = {
-  Sequence:        {bg:'#1e3a5f', border:'#3b82f6', text:'#93c5fd', label:'#bfdbfe'},
-  Fallback:        {bg:'#3b2a1a', border:'#f59e0b', text:'#fcd34d', label:'#fde68a'},
-  ReactiveFallback:{bg:'#2d1f3a', border:'#a855f7', text:'#d8b4fe', label:'#e9d5ff'},
-  ReactiveSequence:{bg:'#1e3a5f', border:'#60a5fa', text:'#bfdbfe', label:'#dbeafe'},
-  Parallel:        {bg:'#1a2e1a', border:'#22c55e', text:'#86efac', label:'#bbf7d0'},
-  Condition:       {bg:'#0e2233', border:'#06b6d4', text:'#67e8f9', label:'#a5f3fc'},
-  Action:          {bg:'#1c2333', border:'#94a3b8', text:'#e2e8f0', label:'#f1f5f9'},
-  Decorator:       {bg:'#2a1f1f', border:'#ef4444', text:'#fca5a5', label:'#fecaca'},
-  SubTree:         {bg:'#1a1a2e', border:'#818cf8', text:'#c7d2fe', label:'#e0e7ff'},
-  Root:            {bg:'#1a1a1a', border:'#6b7280', text:'#9ca3af', label:'#d1d5db'},
+const COL={
+  Sequence:        {bg:'#182840',bo:'#3b82f6',tx:'#93c5fd'},
+  Fallback:        {bg:'#2a1a08',bo:'#f59e0b',tx:'#fcd34d'},
+  ReactiveFallback:{bg:'#1e0f2e',bo:'#a855f7',tx:'#d8b4fe'},
+  ReactiveSequence:{bg:'#182840',bo:'#60a5fa',tx:'#bfdbfe'},
+  Parallel:        {bg:'#0e1f0e',bo:'#22c55e',tx:'#86efac'},
+  Condition:       {bg:'#071824',bo:'#06b6d4',tx:'#67e8f9'},
+  Action:          {bg:'#151c2a',bo:'#94a3b8',tx:'#e2e8f0'},
+  Decorator:       {bg:'#200f0f',bo:'#ef4444',tx:'#fca5a5'},
+  SubTree:         {bg:'#10102a',bo:'#818cf8',tx:'#c7d2fe'},
 };
+const CTRL=new Set(['Sequence','Fallback','ReactiveFallback','ReactiveSequence','Parallel','IfThenElse','Switch']);
+const DECO=new Set(['Inverter','Repeat','RetryUntilSuccessful','Timeout','ForceSuccess','ForceFailure',
+  'RepeatUntilMissionEnd','RepeatUntilFailure','LoopUntilFireOut','Delay','KeepRunningUntilFailure']);
 
-const CONTROL_NODES = new Set([
-  'Sequence','Fallback','ReactiveFallback','ReactiveSequence',
-  'Parallel','IfThenElse','Switch'
-]);
-const DECORATOR_NODES = new Set([
-  'Inverter','Repeat','RetryUntilSuccessful','Timeout',
-  'ForceSuccess','ForceFailure','RepeatUntilMissionEnd',
-  'RepeatUntilFailure','LoopUntilFireOut','Delay','KeepRunningUntilFailure'
-]);
+function ntype(tag){
+  if(CTRL.has(tag))return tag;
+  if(DECO.has(tag))return'Decorator';
+  return nodeModel[tag]||'Action';
+}
+function ncol(tag){return COL[ntype(tag)]||COL.Action;}
 
-function nodeType(tag) {
-  if (CONTROL_NODES.has(tag)) return tag;
-  if (DECORATOR_NODES.has(tag)) return 'Decorator';
-  if (nodeModel[tag]) return nodeModel[tag];
-  return 'Action';
+function parseXML(str){
+  const doc=new DOMParser().parseFromString(str,'text/xml');
+  const pe=doc.querySelector('parsererror');
+  if(pe)throw new Error((pe.querySelector('div,p')?.textContent||pe.textContent).split('\n')[0].slice(0,90));
+  nodeModel={};
+  const m=doc.querySelector('TreeNodesModel');
+  if(m)for(const c of m.children){
+    const id=c.getAttribute('ID');if(!id)continue;
+    const t=c.tagName;
+    nodeModel[id]=t==='Condition'?'Condition':t==='Decorator'?'Decorator':'Action';
+    const pts=[];for(const p of c.children)pts.push({dir:p.tagName.replace('_port',''),name:p.getAttribute('name')});
+    if(pts.length)nodeModel[id+'__ports']=pts;
+  }
+  parsedTrees={};
+  for(const bt of doc.querySelectorAll('BehaviorTree')){
+    const id=bt.getAttribute('ID')||'Tree';
+    if(bt.firstElementChild)parsedTrees[id]=bt.firstElementChild;
+  }
+  const main=doc.querySelector('root')?.getAttribute('main_tree_to_execute');
+  return{trees:parsedTrees,main};
 }
 
-function nodeColors(tag) {
-  const t = nodeType(tag);
-  return COLORS[t] || COLORS.Action;
+let uid=0;
+function mkNode(el,depth=0){
+  if(!el||el.nodeType!==1)return null;
+  const tag=el.tagName,name=el.getAttribute('name')||el.getAttribute('ID')||tag;
+  const id=++uid;
+  const attrs={};
+  for(const a of el.attributes)if(a.name!=='name'&&a.name!=='ID')attrs[a.name]=a.value;
+  const children=[];
+  for(const ch of el.children){const c=mkNode(ch,depth+1);if(c)children.push(c);}
+  return{id,tag,name,depth,children,attrs,x:0,y:0,w:NW,h:NH};
 }
 
-function parseXML(xmlStr) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlStr, 'text/xml');
-  if (doc.querySelector('parsererror')) throw new Error('Invalid XML');
+function flat(n,arr=[]){arr.push(n);if(!collapsed.has(n.id))for(const c of n.children)flat(c,arr);return arr;}
 
-  nodeModel = {};
-  const modelEl = doc.querySelector('TreeNodesModel');
-  if (modelEl) {
-    for (const child of modelEl.children) {
-      const id = child.getAttribute('ID');
-      if (!id) continue;
-      const tag = child.tagName;
-      const ports = [];
-      for (const port of child.children) {
-        ports.push({dir: port.tagName.replace('_port',''), name: port.getAttribute('name')});
-      }
-      nodeModel[id] = tag === 'Condition' ? 'Condition' : tag === 'Decorator' ? 'Decorator' : 'Action';
-      if (ports.length) nodeModel[id + '__ports'] = ports;
-    }
+function subW(n){
+  if(collapsed.has(n.id)||!n.children.length)return n.w;
+  return Math.max(n.w,n.children.map(subW).reduce((a,b)=>a+b+HG,-HG));
+}
+function layout(n,x,y){
+  n.x=x;n.y=y;
+  if(collapsed.has(n.id)||!n.children.length)return;
+  const cy=y+n.h+VG,ws=n.children.map(subW);
+  const tot=ws.reduce((a,b)=>a+b+HG,-HG);
+  let cx=x+n.w/2-tot/2;
+  for(let i=0;i<n.children.length;i++){layout(n.children[i],cx+ws[i]/2-n.children[i].w/2,cy);cx+=ws[i]+HG;}
+}
+function mkEdges(n,arr=[]){if(!collapsed.has(n.id))for(const c of n.children){arr.push({f:n,t:c});mkEdges(c,arr);}return arr;}
+
+let rootNode=null;
+function loadTree(id){
+  uid=0;const el=parsedTrees[id];if(!el)return;
+  rootNode=mkNode(el);if(!rootNode)return;
+  layout(rootNode,0,0);
+  nodes=flat(rootNode);edges=mkEdges(rootNode);
+  fitView();render();updateMM();
+  statusEl.textContent=`${id} — ${nodes.length} nodes`;
+}
+function rebuild(){
+  if(!rootNode)return;
+  layout(rootNode,0,0);nodes=flat(rootNode);edges=mkEdges(rootNode);
+  render();updateMM();
+}
+
+function fitView(){
+  if(!nodes.length)return;
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(const n of nodes){x0=Math.min(x0,n.x);y0=Math.min(y0,n.y);x1=Math.max(x1,n.x+n.w);y1=Math.max(y1,n.y+n.h);}
+  cam.zoom=Math.min((W-60)/(x1-x0),(H-60)/(y1-y0),1.6);
+  cam.x=(W-(x1-x0)*cam.zoom)/2-x0*cam.zoom;
+  cam.y=(H-(y1-y0)*cam.zoom)/2-y0*cam.zoom;
+  updZL();
+}
+function s2w(sx,sy){return{x:(sx-cam.x)/cam.zoom,y:(sy-cam.y)/cam.zoom};}
+function setZoom(z,cx,cy){
+  cx=cx??W/2;cy=cy??H/2;
+  const b=s2w(cx,cy);cam.zoom=Math.max(0.07,Math.min(3.5,z));
+  const a=s2w(cx,cy);cam.x+=(a.x-b.x)*cam.zoom;cam.y+=(a.y-b.y)*cam.zoom;
+  updZL();render();updateMM();
+}
+function updZL(){document.getElementById('zoom-val').textContent=Math.round(cam.zoom*100)+'%';}
+
+function rr(c,x,y,w,h,r){
+  c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();
+}
+function trunc(s,mx,c){
+  if(c.measureText(s).width<=mx)return s;
+  while(s.length>1&&c.measureText(s+'…').width>mx)s=s.slice(0,-1);
+  return s+'…';
+}
+function countDesc(n){let c=n.children.length;for(const ch of n.children)c+=countDesc(ch);return c;}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+  if(!nodes.length)return;
+  ctx.save();ctx.translate(cam.x,cam.y);ctx.scale(cam.zoom,cam.zoom);
+  const lw=1/cam.zoom;
+
+  ctx.lineWidth=1.5*lw;
+  for(const e of edges){
+    const fx=e.f.x+e.f.w/2,fy=e.f.y+e.f.h,tx=e.t.x+e.t.w/2,ty=e.t.y,my=(fy+ty)/2;
+    const hl=searchTerm&&(e.f.name.toLowerCase().includes(searchTerm)||e.t.name.toLowerCase().includes(searchTerm));
+    ctx.strokeStyle=hl?'#3b82f650':'#252b3a';
+    ctx.beginPath();ctx.moveTo(fx,fy);ctx.bezierCurveTo(fx,my,tx,my,tx,ty);ctx.stroke();
+    const ah=5*lw;
+    ctx.fillStyle=hl?'#3b82f650':'#252b3a';
+    ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx-ah/2,ty-ah);ctx.lineTo(tx+ah/2,ty-ah);ctx.closePath();ctx.fill();
   }
 
-  parsedTrees = {};
-  for (const btEl of doc.querySelectorAll('BehaviorTree')) {
-    const id = btEl.getAttribute('ID') || 'Tree';
-    parsedTrees[id] = btEl.firstElementChild;
-  }
+  for(const n of nodes){
+    const c=ncol(n.tag);
+    const isSel=selectedNode?.id===n.id,isHov=hoveredNode?.id===n.id;
+    const isSrch=searchTerm&&n.name.toLowerCase().includes(searchTerm);
+    const isCtrl=CTRL.has(n.tag);
+    const isCol=collapsed.has(n.id)&&n.children.length>0;
+    const r=n.tag==='Condition'?n.h/2:isCtrl?6*lw:4*lw;
 
-  const main = doc.querySelector('root')?.getAttribute('main_tree_to_execute');
-  return {trees: parsedTrees, main, model: nodeModel};
-}
+    if(isSel){ctx.shadowColor=c.bo;ctx.shadowBlur=10*lw;}
+    rr(ctx,n.x,n.y,n.w,n.h,r);
+    ctx.fillStyle=isSrch?c.bo+'30':c.bg;ctx.fill();
+    ctx.lineWidth=(isSel?2:isHov?1.5:0.8)*lw;
+    ctx.strokeStyle=isSel?'#ffffff':isSrch?c.bo:isHov?c.bo:c.bo+'65';ctx.stroke();
+    ctx.shadowBlur=0;
 
-let _idCounter = 0;
-function buildTree(el, depth=0, parent=null) {
-  if (!el || el.nodeType !== 1) return null;
-  const tag = el.tagName;
-  const name = el.getAttribute('name') || el.getAttribute('ID') || tag;
-  const id = ++_idCounter;
-
-  const attrs = {};
-  for (const a of el.attributes) attrs[a.name] = a.value;
-
-  const ports = nodeModel[tag + '__ports'] || [];
-  const nodeAttrs = {};
-  for (const p of ports) {
-    const val = el.getAttribute(p.name);
-    if (val) nodeAttrs[p.name] = val;
-  }
-  // also grab non-standard attrs as ports
-  for (const a of el.attributes) {
-    if (!['name','ID'].includes(a.name)) nodeAttrs[a.name] = a.value;
-  }
-
-  const children = [];
-  for (const child of el.children) {
-    const c = buildTree(child, depth+1, id);
-    if (c) children.push(c);
-  }
-
-  return {id, tag, name, depth, parent, children, attrs: nodeAttrs, x:0, y:0, w:NODE_W, h:NODE_H, collapsed:false};
-}
-
-function flattenTree(node, arr=[]) {
-  arr.push(node);
-  if (!collapsedNodes.has(node.id)) {
-    for (const c of node.children) flattenTree(c, arr);
-  }
-  return arr;
-}
-
-function subtreeWidth(node) {
-  if (collapsedNodes.has(node.id) || !node.children.length) return node.w;
-  const childWidths = node.children.map(subtreeWidth);
-  const total = childWidths.reduce((a,b)=>a+b+H_GAP, -H_GAP);
-  return Math.max(node.w, total);
-}
-
-function layoutTree(node, x, y) {
-  node.x = x;
-  node.y = y;
-  if (collapsedNodes.has(node.id) || !node.children.length) return;
-
-  const childY = y + node.h + V_GAP;
-  const widths = node.children.map(subtreeWidth);
-  const total = widths.reduce((a,b)=>a+b+H_GAP, -H_GAP);
-  let cx = x + node.w/2 - total/2;
-
-  for (let i=0; i<node.children.length; i++) {
-    const cw = widths[i];
-    layoutTree(node.children[i], cx + cw/2 - node.children[i].w/2, childY);
-    cx += cw + H_GAP;
-  }
-}
-
-function buildEdges(node, arr=[]) {
-  if (collapsedNodes.has(node.id)) return arr;
-  for (const child of node.children) {
-    arr.push({from: node, to: child});
-    buildEdges(child, arr);
-  }
-  return arr;
-}
-
-function loadTree(treeId) {
-  activeTree = treeId;
-  _idCounter = 0;
-  const rootEl = parsedTrees[treeId];
-  if (!rootEl) return;
-  const root = buildTree(rootEl);
-  if (!root) return;
-  layoutTree(root, 0, 0);
-  nodes = flattenTree(root);
-  edges = buildEdges(root);
-  fitView();
-  render();
-  updateMinimap();
-  statusEl.textContent = `${treeId} — ${nodes.length} nodes`;
-}
-
-function fitView() {
-  if (!nodes.length) return;
-  let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
-  for (const n of nodes) {
-    minX = Math.min(minX, n.x); minY = Math.min(minY, n.y);
-    maxX = Math.max(maxX, n.x+n.w); maxY = Math.max(maxY, n.y+n.h);
-  }
-  const pw = W - 40, ph = H - 40;
-  const tw = maxX - minX, th = maxY - minY;
-  const zoom = Math.min(pw/tw, ph/th, 1.5);
-  cam.zoom = zoom;
-  cam.x = (W - tw*zoom)/2 - minX*zoom;
-  cam.y = (H - th*zoom)/2 - minY*zoom;
-  updateZoomLabel();
-}
-
-function worldToScreen(wx, wy) {
-  return {x: wx*cam.zoom + cam.x, y: wy*cam.zoom + cam.y};
-}
-
-function screenToWorld(sx, sy) {
-  return {x: (sx - cam.x)/cam.zoom, y: (sy - cam.y)/cam.zoom};
-}
-
-function nodeAt(sx, sy) {
-  const w = screenToWorld(sx, sy);
-  for (let i=nodes.length-1; i>=0; i--) {
-    const n = nodes[i];
-    if (w.x >= n.x && w.x <= n.x+n.w && w.y >= n.y && w.y <= n.y+n.h) return n;
-  }
-  return null;
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y); ctx.arcTo(x+w,y, x+w,y+r, r);
-  ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w,y+h, x+w-r,y+h, r);
-  ctx.lineTo(x+r, y+h); ctx.arcTo(x,y+h, x,y+h-r, r);
-  ctx.lineTo(x, y+r); ctx.arcTo(x,y, x+r,y, r);
-  ctx.closePath();
-}
-
-function truncate(str, maxW, ctx2) {
-  if (ctx2.measureText(str).width <= maxW) return str;
-  while (str.length > 1 && ctx2.measureText(str+'…').width > maxW) str = str.slice(0,-1);
-  return str + '…';
-}
-
-function render() {
-  ctx.clearRect(0, 0, W, H);
-
-  if (!nodes.length) return;
-
-  ctx.save();
-  ctx.translate(cam.x, cam.y);
-  ctx.scale(cam.zoom, cam.zoom);
-
-  // Draw edges
-  ctx.lineWidth = 1.5 / cam.zoom;
-  for (const e of edges) {
-    const fx = e.from.x + e.from.w/2;
-    const fy = e.from.y + e.from.h;
-    const tx = e.to.x + e.to.w/2;
-    const ty = e.to.y;
-    const my = (fy + ty) / 2;
-
-    ctx.beginPath();
-    ctx.moveTo(fx, fy);
-    ctx.bezierCurveTo(fx, my, tx, my, tx, ty);
-
-    const isHighlighted = searchTerm && (
-      e.from.name.toLowerCase().includes(searchTerm) ||
-      e.to.name.toLowerCase().includes(searchTerm)
-    );
-
-    ctx.strokeStyle = isHighlighted ? '#3b82f680' : '#2a2f3f';
-    ctx.stroke();
-
-    // arrowhead
-    ctx.beginPath();
-    const ah = 5/cam.zoom;
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(tx-ah/2, ty-ah);
-    ctx.lineTo(tx+ah/2, ty-ah);
-    ctx.closePath();
-    ctx.fillStyle = isHighlighted ? '#3b82f680' : '#2a2f3f';
-    ctx.fill();
-  }
-
-  // Draw nodes
-  for (const n of nodes) {
-    const c = nodeColors(n.tag);
-    const isSelected = selectedNode?.id === n.id;
-    const isHovered  = hoveredNode?.id === n.id;
-    const isSearch   = searchTerm && n.name.toLowerCase().includes(searchTerm);
-    const isCollapsed = collapsedNodes.has(n.id) && n.children.length > 0;
-
-    const r = n.tag === 'Condition' ? n.h/2 : (CONTROL_NODES.has(n.tag) ? 6 : 4);
-
-    // Shadow for selected
-    if (isSelected) {
-      ctx.shadowColor = c.border;
-      ctx.shadowBlur  = 10/cam.zoom;
+    if(isCtrl&&cam.zoom>0.4){
+      const bh=13*lw;
+      rr(ctx,n.x,n.y,n.w,bh,r);ctx.fillStyle=c.bo+'20';ctx.fill();
+      ctx.font=`500 ${9*lw}px -apple-system,sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle=c.bo;ctx.fillText(n.tag,n.x+n.w/2,n.y+6.5*lw);
     }
 
-    // Fill
-    roundRect(ctx, n.x, n.y, n.w, n.h, r);
-    ctx.fillStyle = isSearch ? c.border + '44' : c.bg;
-    ctx.fill();
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font=`${11*lw}px -apple-system,sans-serif`;
+    ctx.fillStyle=c.tx;
+    const yOff=isCtrl&&cam.zoom>0.4?5*lw:0;
+    ctx.fillText(trunc(n.name,n.w-22*lw,ctx),n.x+n.w/2,n.y+n.h/2+yOff);
 
-    // Border
-    ctx.lineWidth = isSelected ? 2/cam.zoom : isHovered ? 1.5/cam.zoom : 1/cam.zoom;
-    ctx.strokeStyle = isSelected ? '#ffffff' : isSearch ? c.border : isHovered ? c.border : c.border + '80';
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Collapse indicator
-    if (n.children.length > 0) {
-      const cx2 = n.x + n.w - 10;
-      const cy2 = n.y + n.h/2;
-      const sz  = 4/cam.zoom;
-      ctx.fillStyle = c.border + 'aa';
-      ctx.beginPath();
-      if (isCollapsed) {
-        ctx.moveTo(cx2-sz, cy2-sz); ctx.lineTo(cx2+sz, cy2); ctx.lineTo(cx2-sz, cy2+sz);
-      } else {
-        ctx.moveTo(cx2-sz, cy2-sz/2); ctx.lineTo(cx2+sz, cy2-sz/2); ctx.lineTo(cx2, cy2+sz/2);
-      }
-      ctx.closePath();
-      ctx.fill();
+    if(Object.keys(n.attrs).length&&cam.zoom>0.6){
+      ctx.beginPath();ctx.arc(n.x+7*lw,n.y+n.h/2,2.5*lw,0,Math.PI*2);
+      ctx.fillStyle=c.bo+'88';ctx.fill();
     }
 
-    // Type tag (control nodes only at high zoom)
-    if (CONTROL_NODES.has(n.tag) && cam.zoom > 0.5) {
-      const tagH = 14;
-      roundRect(ctx, n.x, n.y, n.w, tagH, r);
-      ctx.fillStyle = c.border + '30';
-      ctx.fill();
+    if(n.children.length){
+      const cx2=n.x+n.w-8*lw,cy2=n.y+n.h/2,sz=3.5*lw;
+      ctx.fillStyle=c.bo+'88';ctx.beginPath();
+      if(isCol){ctx.moveTo(cx2-sz,cy2-sz);ctx.lineTo(cx2+sz,cy2);ctx.lineTo(cx2-sz,cy2+sz);}
+      else{ctx.moveTo(cx2-sz,cy2-sz*.5);ctx.lineTo(cx2+sz,cy2-sz*.5);ctx.lineTo(cx2,cy2+sz*.5);}
+      ctx.closePath();ctx.fill();
     }
 
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    if (CONTROL_NODES.has(n.tag) && cam.zoom > 0.5) {
-      ctx.font = `500 ${9/cam.zoom}px -apple-system,sans-serif`;
-      ctx.fillStyle = c.border;
-      ctx.fillText(n.tag, n.x + n.w/2, n.y + 7/cam.zoom);
-
-      ctx.font = `500 ${11/cam.zoom}px -apple-system,sans-serif`;
-      ctx.fillStyle = c.text;
-      const label = truncate(n.name, n.w - 24/cam.zoom, ctx);
-      ctx.fillText(label, n.x + n.w/2, n.y + n.h/2 + 4/cam.zoom);
-    } else {
-      ctx.font = `${11/cam.zoom}px -apple-system,sans-serif`;
-      ctx.fillStyle = c.text;
-      const label = truncate(n.name, n.w - 20/cam.zoom, ctx);
-      ctx.fillText(label, n.x + n.w/2, n.y + n.h/2);
-    }
-
-    // Port dots
-    if (Object.keys(n.attrs).length && cam.zoom > 0.7) {
-      ctx.beginPath();
-      ctx.arc(n.x + 8/cam.zoom, n.y + n.h/2, 3/cam.zoom, 0, Math.PI*2);
-      ctx.fillStyle = c.border + 'aa';
-      ctx.fill();
-    }
-
-    // Collapsed count badge
-    if (isCollapsed) {
-      const bw = 22/cam.zoom, bh = 14/cam.zoom;
-      const bx = n.x + n.w/2 - bw/2;
-      const by = n.y + n.h + 4/cam.zoom;
-      roundRect(ctx, bx, by, bw, bh, 3/cam.zoom);
-      ctx.fillStyle = c.border + '30';
-      ctx.fill();
-      ctx.font = `${9/cam.zoom}px -apple-system,sans-serif`;
-      ctx.fillStyle = c.border;
-      ctx.fillText(countDescendants(n) + '', n.x + n.w/2, by + bh/2);
+    if(isCol){
+      const cnt=countDesc(n),bw=22*lw,bh=12*lw,bx=n.x+n.w/2-bw/2,by=n.y+n.h+3*lw;
+      rr(ctx,bx,by,bw,bh,3*lw);ctx.fillStyle=c.bo+'22';ctx.fill();
+      ctx.font=`${9*lw}px -apple-system,sans-serif`;ctx.fillStyle=c.bo;
+      ctx.fillText(cnt,n.x+n.w/2,by+bh/2);
     }
   }
-
   ctx.restore();
 }
 
-function countDescendants(node) {
-  let c = node.children.length;
-  for (const ch of node.children) c += countDescendants(ch);
-  return c;
-}
-
-function updateMinimap() {
-  const mw = mmCanvas.width = 320;
-  const mh = mmCanvas.height = 200;
+function updateMM(){
+  const mw=mmCv.width=300,mh=mmCv.height=180;
   mmCtx.clearRect(0,0,mw,mh);
-  if (!nodes.length) return;
-
-  let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
-  for (const n of nodes) {
-    minX=Math.min(minX,n.x); minY=Math.min(minY,n.y);
-    maxX=Math.max(maxX,n.x+n.w); maxY=Math.max(maxY,n.y+n.h);
+  if(!nodes.length)return;
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(const n of nodes){x0=Math.min(x0,n.x);y0=Math.min(y0,n.y);x1=Math.max(x1,n.x+n.w);y1=Math.max(y1,n.y+n.h);}
+  const z=Math.min((mw-6)/(x1-x0),(mh-6)/(y1-y0));
+  const ox=(mw-(x1-x0)*z)/2,oy=(mh-(y1-y0)*z)/2;
+  for(const e of edges){
+    const fx=(e.f.x+e.f.w/2-x0)*z+ox,fy=(e.f.y+e.f.h-y0)*z+oy;
+    const tx=(e.t.x+e.t.w/2-x0)*z+ox,ty=(e.t.y-y0)*z+oy,my=(fy+ty)/2;
+    mmCtx.beginPath();mmCtx.moveTo(fx,fy);mmCtx.bezierCurveTo(fx,my,tx,my,tx,ty);
+    mmCtx.strokeStyle='#252b3a';mmCtx.lineWidth=0.5;mmCtx.stroke();
   }
-  const tw=maxX-minX, th=maxY-minY;
-  const zoom=Math.min((mw-8)/tw, (mh-8)/th);
-  const ox=(mw-tw*zoom)/2, oy=(mh-th*zoom)/2;
-
-  for (const e of edges) {
-    const fx=(e.from.x+e.from.w/2-minX)*zoom+ox;
-    const fy=(e.from.y+e.from.h-minY)*zoom+oy;
-    const tx=(e.to.x+e.to.w/2-minX)*zoom+ox;
-    const ty=(e.to.y-minY)*zoom+oy;
-    mmCtx.beginPath(); mmCtx.moveTo(fx,fy);
-    const my=(fy+ty)/2;
-    mmCtx.bezierCurveTo(fx,my,tx,my,tx,ty);
-    mmCtx.strokeStyle='#2a2f3f'; mmCtx.lineWidth=0.5; mmCtx.stroke();
+  for(const n of nodes){
+    const c=ncol(n.tag);
+    mmCtx.fillStyle=c.bo+'99';
+    mmCtx.fillRect((n.x-x0)*z+ox,(n.y-y0)*z+oy,Math.max(n.w*z,2),Math.max(n.h*z,2));
   }
-  for (const n of nodes) {
-    const c=nodeColors(n.tag);
-    const nx=(n.x-minX)*zoom+ox, ny=(n.y-minY)*zoom+oy;
-    const nw=n.w*zoom, nh=n.h*zoom;
-    mmCtx.fillStyle=c.border+'aa';
-    mmCtx.fillRect(nx,ny,Math.max(nw,2),Math.max(nh,2));
-  }
-
-  // viewport rect
-  const vx=(-cam.x/cam.zoom-minX)*zoom+ox;
-  const vy=(-cam.y/cam.zoom-minY)*zoom+oy;
-  const vw=(W/cam.zoom)*zoom, vh=(H/cam.zoom)*zoom;
-  mmCtx.strokeStyle='#60a5fa'; mmCtx.lineWidth=1;
-  mmCtx.strokeRect(vx,vy,vw,vh);
+  const vx=(-cam.x/cam.zoom-x0)*z+ox,vy=(-cam.y/cam.zoom-y0)*z+oy;
+  mmCtx.strokeStyle='#60a5fa';mmCtx.lineWidth=1;mmCtx.strokeRect(vx,vy,W/cam.zoom*z,H/cam.zoom*z);
 }
 
-function updateZoomLabel() {
-  document.getElementById('zoom-val').textContent = Math.round(cam.zoom*100)+'%';
+function resizeAll(){
+  const wrap=document.getElementById('canvas-wrap');
+  W=canvas.width=wrap.clientWidth;H=canvas.height=wrap.clientHeight;
+  render();updateMM();
 }
 
-function resizeCanvas() {
-  const wrap = document.getElementById('canvas-wrap');
-  W = canvas.width = wrap.clientWidth;
-  H = canvas.height = wrap.clientHeight;
-  render();
-  updateMinimap();
+function nodeAt(sx,sy){
+  const w=s2w(sx,sy);
+  for(let i=nodes.length-1;i>=0;i--){const n=nodes[i];if(w.x>=n.x&&w.x<=n.x+n.w&&w.y>=n.y&&w.y<=n.y+n.h)return n;}
+  return null;
 }
 
-function setZoom(z, cx, cy) {
-  cx = cx ?? W/2; cy = cy ?? H/2;
-  const wBefore = screenToWorld(cx, cy);
-  cam.zoom = Math.max(0.08, Math.min(3, z));
-  const wAfter = screenToWorld(cx, cy);
-  cam.x += (wAfter.x - wBefore.x)*cam.zoom;
-  cam.y += (wAfter.y - wBefore.y)*cam.zoom;
-  updateZoomLabel();
-  render();
-  updateMinimap();
-}
-
-// ── Events ────────────────────────────────────────────────────────────────────
-
-canvas.addEventListener('wheel', e => {
-  e.preventDefault();
-  const factor = e.deltaY < 0 ? 1.12 : 1/1.12;
-  setZoom(cam.zoom * factor, e.offsetX, e.offsetY);
-}, {passive:false});
-
-canvas.addEventListener('mousedown', e => {
-  if (e.button !== 0) return;
-  const n = nodeAt(e.offsetX, e.offsetY);
-  if (n) {
-    selectedNode = n;
-    dragging = n;
-    dragOffset = {x: e.offsetX - n.x*cam.zoom - cam.x, y: e.offsetY - n.y*cam.zoom - cam.y};
-  } else {
-    panning = true;
-    panStart = {x: e.offsetX, y: e.offsetY};
-    camStart = {x: cam.x, y: cam.y};
-    canvas.classList.add('panning');
-  }
+canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(cam.zoom*(e.deltaY<0?1.12:1/1.12),e.offsetX,e.offsetY);},{passive:false});
+canvas.addEventListener('mousedown',e=>{
+  if(e.button!==0)return;
+  const n=nodeAt(e.offsetX,e.offsetY);
+  if(n){selectedNode=n;dragging=n;dragOff={x:e.offsetX-n.x*cam.zoom-cam.x,y:e.offsetY-n.y*cam.zoom-cam.y};scrollEditorTo(n);}
+  else{selectedNode=null;panning=true;panSt={x:e.offsetX,y:e.offsetY};camSt={x:cam.x,y:cam.y};canvas.classList.add('panning');}
   render();
 });
-
-canvas.addEventListener('mousemove', e => {
-  if (dragging) {
-    dragging.x = (e.offsetX - dragOffset.x - cam.x) / cam.zoom;
-    dragging.y = (e.offsetY - dragOffset.y - cam.y) / cam.zoom;
-    edges = buildEdges(nodes[0].__root || nodes[0]);
-    render(); updateMinimap();
-    return;
-  }
-  if (panning) {
-    cam.x = camStart.x + (e.offsetX - panStart.x);
-    cam.y = camStart.y + (e.offsetY - panStart.y);
-    render(); updateMinimap();
-    return;
-  }
-  const n = nodeAt(e.offsetX, e.offsetY);
-  if (n !== hoveredNode) { hoveredNode = n; render(); }
-  if (n) {
-    const tt = tooltip;
-    tt.style.opacity = '1';
-    const tx = e.offsetX + 14, ty = e.offsetY - 10;
-    tt.style.left = (tx + 260 > W ? tx-280 : tx)+'px';
-    tt.style.top  = ty+'px';
-    document.getElementById('tt-title').textContent = n.name;
-    document.getElementById('tt-type').textContent  = n.tag + ' · ' + nodeType(n.tag);
-    const portsEl = document.getElementById('tt-ports');
-    portsEl.innerHTML = '';
-    for (const [k,v] of Object.entries(n.attrs)) {
-      const d = document.createElement('div');
-      d.className = 'tt-port';
-      d.innerHTML = `<span style="color:var(--muted)">${k}:</span><span>${v}</span>`;
-      portsEl.appendChild(d);
+canvas.addEventListener('mousemove',e=>{
+  if(dragging){dragging.x=(e.offsetX-dragOff.x-cam.x)/cam.zoom;dragging.y=(e.offsetY-dragOff.y-cam.y)/cam.zoom;render();updateMM();return;}
+  if(panning){cam.x=camSt.x+(e.offsetX-panSt.x);cam.y=camSt.y+(e.offsetY-panSt.y);render();updateMM();return;}
+  const n=nodeAt(e.offsetX,e.offsetY);
+  if(n!==hoveredNode){hoveredNode=n;render();}
+  if(n){
+    tooltip.style.opacity='1';
+    const tx=e.offsetX+14,ty=e.offsetY-10;
+    tooltip.style.left=(tx+240>W?tx-250:tx)+'px';
+    tooltip.style.top=Math.max(ty,4)+'px';
+    document.getElementById('tt-title').textContent=n.name;
+    document.getElementById('tt-kind').textContent=n.tag+' · '+ntype(n.tag);
+    const tp=document.getElementById('tt-ports');tp.innerHTML='';
+    for(const[k,v]of Object.entries(n.attrs)){
+      const d=document.createElement('div');d.className='tt-row';
+      d.innerHTML=`<span class="k">${k}:</span><span class="v">${v}</span>`;tp.appendChild(d);
     }
-    if (n.children.length) {
-      const d = document.createElement('div');
-      d.className = 'tt-port';
-      d.innerHTML = `<span style="color:var(--muted)">children:</span><span>${n.children.length}${collapsedNodes.has(n.id)?` (collapsed, ${countDescendants(n)} hidden)`:''}</span>`;
-      portsEl.appendChild(d);
+    if(n.children.length){
+      const d=document.createElement('div');d.className='tt-row';
+      d.innerHTML=`<span class="k">children:</span><span class="v">${n.children.length}${collapsed.has(n.id)?` (+${countDesc(n)} hidden)`:''}</span>`;tp.appendChild(d);
     }
-  } else {
-    tooltip.style.opacity = '0';
-  }
+  }else tooltip.style.opacity='0';
 });
-
-canvas.addEventListener('mouseup', e => {
-  dragging = null;
-  panning = false;
-  canvas.classList.remove('panning');
+canvas.addEventListener('mouseup',()=>{dragging=null;panning=false;canvas.classList.remove('panning');});
+canvas.addEventListener('mouseleave',()=>{hoveredNode=null;dragging=null;panning=false;canvas.classList.remove('panning');tooltip.style.opacity='0';render();});
+canvas.addEventListener('dblclick',e=>{
+  const n=nodeAt(e.offsetX,e.offsetY);if(!n||!n.children.length)return;
+  collapsed.has(n.id)?collapsed.delete(n.id):collapsed.add(n.id);rebuild();
 });
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
-canvas.addEventListener('mouseleave', () => {
-  hoveredNode = null;
-  tooltip.style.opacity = '0';
-  dragging = null;
-  panning = false;
-  canvas.classList.remove('panning');
-  render();
-});
+document.getElementById('canvas-wrap').addEventListener('dragover',e=>e.preventDefault());
+document.getElementById('canvas-wrap').addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f)readFile(f);});
 
-canvas.addEventListener('dblclick', e => {
-  const n = nodeAt(e.offsetX, e.offsetY);
-  if (!n || !n.children.length) return;
-  if (collapsedNodes.has(n.id)) {
-    collapsedNodes.delete(n.id);
-  } else {
-    collapsedNodes.add(n.id);
-  }
-  rebuildLayout();
-});
+document.getElementById('btn-fit').onclick=()=>{fitView();render();updateMM();};
+document.getElementById('btn-zin').onclick=()=>setZoom(cam.zoom*1.25);
+document.getElementById('btn-zout').onclick=()=>setZoom(cam.zoom/1.25);
+document.getElementById('btn-expand').onclick=()=>{collapsed.clear();rebuild();};
+document.getElementById('btn-collapse').onclick=()=>{for(const n of nodes)if(n.children.length)collapsed.add(n.id);rebuild();};
+document.getElementById('tree-select').addEventListener('change',e=>{collapsed.clear();loadTree(e.target.value);});
 
-canvas.addEventListener('contextmenu', e => e.preventDefault());
-
-function rebuildLayout() {
-  if (!nodes.length) return;
-  const root = nodes[0];
-  layoutTree(root, 0, 0);
-  nodes = flattenTree(root);
-  edges = buildEdges(root);
-  render(); updateMinimap();
-}
-
-document.getElementById('btn-fit').onclick = () => { fitView(); render(); updateMinimap(); };
-document.getElementById('btn-zoom-in').onclick  = () => setZoom(cam.zoom * 1.25);
-document.getElementById('btn-zoom-out').onclick = () => setZoom(cam.zoom / 1.25);
-
-document.getElementById('btn-expand').onclick = () => {
-  collapsedNodes.clear(); rebuildLayout();
-};
-document.getElementById('btn-collapse').onclick = () => {
-  for (const n of nodes) if (n.children.length) collapsedNodes.add(n.id);
-  rebuildLayout();
+document.getElementById('btn-editor').onclick=function(){
+  const pane=document.getElementById('editor-pane');
+  const res=document.getElementById('resizer');
+  const hide=!pane.classList.contains('hidden');
+  pane.classList.toggle('hidden',hide);
+  res.style.display=hide?'none':'';
+  this.classList.toggle('active',!hide);
+  setTimeout(resizeAll,150);
 };
 
-document.getElementById('search').addEventListener('input', e => {
-  searchTerm = e.target.value.toLowerCase().trim();
-  render();
-  if (searchTerm) {
-    const match = nodes.find(n => n.name.toLowerCase().includes(searchTerm));
-    if (match) {
-      cam.x = W/2 - (match.x + match.w/2)*cam.zoom;
-      cam.y = H/2 - (match.y + match.h/2)*cam.zoom;
-      selectedNode = match;
-      render(); updateMinimap();
-    }
+document.getElementById('search-input').addEventListener('input',e=>{
+  searchTerm=e.target.value.toLowerCase().trim();render();
+  if(searchTerm){
+    const m=nodes.find(n=>n.name.toLowerCase().includes(searchTerm));
+    if(m){cam.x=W/2-(m.x+m.w/2)*cam.zoom;cam.y=H/2-(m.y+m.h/2)*cam.zoom;selectedNode=m;render();updateMM();}
   }
 });
 
-document.getElementById('tree-select').addEventListener('change', e => {
-  collapsedNodes.clear();
-  loadTree(e.target.value);
+document.getElementById('file-input').addEventListener('change',e=>{const f=e.target.files[0];if(f)readFile(f);e.target.value='';});
+
+function readFile(f){
+  const r=new FileReader();
+  r.onload=ev=>{editorEl.value=ev.target.result;syncEditor();tryLoad(ev.target.result);};
+  r.readAsText(f);
+}
+
+function syncEditor(){
+  const lines=editorEl.value.split('\n');
+  lineNums.textContent=lines.map((_,i)=>String(i+1).padStart(3,' ')).join('\n');
+  lineNums.scrollTop=editorEl.scrollTop;
+}
+
+editorEl.addEventListener('scroll',()=>{lineNums.scrollTop=editorEl.scrollTop;});
+editorEl.addEventListener('input',()=>{
+  syncEditor();
+  clearTimeout(parseTimer);
+  parseTimer=setTimeout(()=>tryLoad(editorEl.value),350);
+});
+editorEl.addEventListener('paste',()=>setTimeout(()=>{syncEditor();clearTimeout(parseTimer);parseTimer=setTimeout(()=>tryLoad(editorEl.value),200);},0));
+editorEl.addEventListener('keydown',e=>{
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const s=editorEl.selectionStart,en=editorEl.selectionEnd;
+    editorEl.value=editorEl.value.slice(0,s)+'  '+editorEl.value.slice(en);
+    editorEl.selectionStart=editorEl.selectionEnd=s+2;syncEditor();
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){clearTimeout(parseTimer);tryLoad(editorEl.value);}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==='F'){e.preventDefault();formatXML();}
 });
 
-function loadXMLString(str) {
-  try {
-    const {trees, main} = parseXML(str);
-    const sel = document.getElementById('tree-select');
-    sel.innerHTML = '';
-    const ids = Object.keys(trees);
-    if (!ids.length) { statusEl.textContent = 'No BehaviorTree elements found'; return; }
-    for (const id of ids) {
-      const opt = document.createElement('option');
-      opt.value = id; opt.textContent = id;
-      sel.appendChild(opt);
-    }
-    sel.style.display = ids.length > 1 ? '' : 'none';
-    const active = main && trees[main] ? main : ids[0];
-    sel.value = active;
-    collapsedNodes.clear();
-    dropZone.classList.add('hidden');
+function tryLoad(str){
+  str=str.trim();
+  if(!str){errMsg.style.display='none';return;}
+  try{
+    const{trees,main}=parseXML(str);
+    const ids=Object.keys(trees);
+    if(!ids.length){showErr('No <BehaviorTree> element found');return;}
+    const sel=document.getElementById('tree-select');
+    sel.innerHTML='';
+    for(const id of ids){const o=document.createElement('option');o.value=id;o.textContent=id;sel.appendChild(o);}
+    sel.style.display=ids.length>1?'':'none';
+    const active=main&&trees[main]?main:ids[0];
+    sel.value=active;collapsed.clear();
+    dropHint.classList.add('hidden');errMsg.style.display='none';
     loadTree(active);
-  } catch(err) {
-    statusEl.textContent = 'Parse error: ' + err.message;
-  }
+  }catch(err){showErr(err.message);}
 }
 
-document.getElementById('file-input').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => loadXMLString(ev.target.result);
-  reader.readAsText(file);
+function showErr(msg){errMsg.textContent='Parse error: '+msg;errMsg.style.display='';}
+
+function scrollEditorTo(n){
+  const xml=editorEl.value;
+  const needle=n.attrs.name?`name="${n.name}"`:n.attrs.status?`status="${n.attrs.status}"`:`<${n.tag}`;
+  const idx=xml.indexOf(needle);if(idx<0)return;
+  const line=xml.slice(0,idx).split('\n').length-1;
+  const lh=parseFloat(getComputedStyle(editorEl).lineHeight)||19;
+  editorEl.scrollTop=Math.max(0,(line-3)*lh);
+  editorEl.setSelectionRange(idx,idx+needle.length);
+}
+
+function formatXML(){
+  const str=editorEl.value.trim();if(!str)return;
+  try{
+    const doc=new DOMParser().parseFromString(str,'text/xml');
+    if(doc.querySelector('parsererror'))return;
+    let indent=0;
+    const fmt=new XMLSerializer().serializeToString(doc)
+      .replace(/>\s*</g,'>\n<').split('\n').map(line=>{
+        line=line.trim();if(!line)return'';
+        if(line.startsWith('</'))indent=Math.max(0,indent-1);
+        const out='  '.repeat(indent)+line;
+        if(!line.startsWith('</')&&!line.startsWith('<?')&&!line.endsWith('/>')&&!line.startsWith('<!'))indent++;
+        return out;
+      }).join('\n');
+    editorEl.value=fmt;syncEditor();tryLoad(fmt);
+  }catch(e){}
+}
+
+document.getElementById('btn-format').onclick=formatXML;
+document.getElementById('btn-copy').onclick=()=>{
+  navigator.clipboard?.writeText(editorEl.value).then(()=>{
+    const b=document.getElementById('btn-copy');b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1500);
+  });
+};
+document.getElementById('btn-clear').onclick=()=>{
+  editorEl.value='';syncEditor();rootNode=null;nodes=[];edges=[];
+  render();updateMM();dropHint.classList.remove('hidden');
+  statusEl.textContent='Editor cleared';errMsg.style.display='none';
+  document.getElementById('tree-select').style.display='none';
+};
+
+const resizer=document.getElementById('resizer');
+let rDrag=false,rStartX=0,rStartW=0;
+resizer.addEventListener('mousedown',e=>{
+  rDrag=true;rStartX=e.clientX;
+  rStartW=document.getElementById('editor-pane').offsetWidth;
+  resizer.classList.add('active');document.body.style.userSelect='none';document.body.style.cursor='col-resize';
 });
-
-const wrap = document.getElementById('canvas-wrap');
-wrap.addEventListener('dragover', e => { e.preventDefault(); });
-wrap.addEventListener('drop', e => {
-  e.preventDefault();
-  const file = e.dataTransfer.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => loadXMLString(ev.target.result);
-  reader.readAsText(file);
+document.addEventListener('mousemove',e=>{
+  if(!rDrag)return;
+  const w=Math.max(180,Math.min(window.innerWidth*0.65,rStartW+(e.clientX-rStartX)));
+  document.getElementById('editor-pane').style.width=w+'px';resizeAll();
 });
+document.addEventListener('mouseup',()=>{
+  if(!rDrag)return;rDrag=false;
+  resizer.classList.remove('active');document.body.style.userSelect='';document.body.style.cursor='';
+});
+window.addEventListener('resize',resizeAll);
+resizeAll();
 
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-// Load the patrol_mission.xml content directly as a demo
-const DEMO_XML = `<?xml version="1.0" encoding="UTF-8"?>
+const DEMO=`<?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4" main_tree_to_execute="PatrolMission">
+
   <BehaviorTree ID="PatrolMission">
     <ReactiveFallback name="MissionRoot">
+
       <Sequence name="EmergencyDock">
         <IsBatteryCritical/>
         <ReportStatusToServer status="Emergency: Battery Critical"/>
         <NavigateToDock/>
-        <ReportStatusToServer status="Docked: Emergency Recharge"/>
         <WaitUntilCharged/>
       </Sequence>
+
       <Sequence name="InvestigateAnomaly">
         <IsAnomalyDetected/>
-        <ReportStatusToServer status="Anomaly Detected: Interrupting Patrol"/>
+        <ReportStatusToServer status="Anomaly Detected"/>
         <SavePatrolCheckpoint/>
         <NavigateToAnomalyLocation/>
         <InspectAnomaly/>
         <LogAnomalyEvent/>
         <ReportAnomalyToServer/>
-        <ReportStatusToServer status="Investigation Complete: Resuming Patrol"/>
         <RestorePatrolCheckpoint/>
       </Sequence>
+
       <Sequence name="PatrolOperations">
         <WaitForPatrolSchedule/>
         <GetPatrolWaypoints/>
@@ -766,18 +605,15 @@ const DEMO_XML = `<?xml version="1.0" encoding="UTF-8"?>
               <Fallback name="BatteryOrContinue">
                 <Sequence name="LowBatteryDock">
                   <IsBatteryLow/>
-                  <ReportStatusToServer status="Battery Low: Docking"/>
                   <SavePatrolCheckpoint/>
                   <NavigateToDock/>
                   <WaitUntilCharged/>
-                  <ReportStatusToServer status="Recharged: Resuming Patrol"/>
                   <RestorePatrolCheckpoint/>
                 </Sequence>
                 <Sequence name="NavigateAndScan">
                   <NavigateToWaypoint/>
-                  <ReportStatusToServer status="Reached Waypoint"/>
                   <ScanAreaAtWaypoint/>
-                  <ReportStatusToServer status="Waypoint Scan Complete"/>
+                  <ReportStatusToServer status="Waypoint Complete"/>
                 </Sequence>
               </Fallback>
             </Sequence>
@@ -790,10 +626,12 @@ const DEMO_XML = `<?xml version="1.0" encoding="UTF-8"?>
             </Sequence>
           </RepeatUntilFailure>
         </Parallel>
-        <ReportStatusToServer status="Patrol Mission Complete"/>
+        <ReportStatusToServer status="Patrol Complete"/>
       </Sequence>
+
     </ReactiveFallback>
   </BehaviorTree>
+
   <TreeNodesModel>
     <Condition ID="IsBatteryCritical"/>
     <Condition ID="IsBatteryLow"/>
@@ -819,9 +657,12 @@ const DEMO_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <Decorator ID="RepeatUntilFailure"/>
     <Control ID="Parallel"/>
   </TreeNodesModel>
+
 </root>`;
 
-loadXMLString(DEMO_XML);
+editorEl.value=DEMO;
+syncEditor();
+tryLoad(DEMO);
 </script>
 </body>
 </html>
