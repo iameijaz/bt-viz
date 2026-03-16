@@ -1,6 +1,6 @@
 ﻿# BT Visualizer
 
-**Live demo → [iameijaz.github.io/bt-visualizer](https://iameijaz.github.io/bt-visualizer)**
+**Live demo → [iameijaz.github.io/bt-viz](https://iameijaz.github.io/bt-viz)**
 
 A lightweight, browser-based visualizer for [BehaviorTree.CPP](https://www.behaviortree.dev/) format 4 XML files.
 No installation. No server. No dependencies. Open the link and go.
